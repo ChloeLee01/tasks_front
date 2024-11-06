@@ -1,12 +1,11 @@
 /** @type {import('tailwindcss').Config} */
-
-rts = {
+module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {},
     fontFamily: {
-      customFontEn: ["IBM Plex Mono", "monospace"],
-      customFontEn: ["IBM Plex Sans KR", "sans-serif"],
+      customFontEn: ["IBM Plex Mono", "monosapce"],
+      customFontKR: ["IBM Plex Sans KR", "sans-serif"],
     },
   },
   plugins: [],
