@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 
 import { confirmAlert } from "react-confirm-alert"; // Import
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
+import { openModal } from "../redux/slices/modalSlice";
 
 const Item = ({ task }) => {
   const [confirm, setConfirm] = useState(false);
@@ -85,6 +86,19 @@ const Item = ({ task }) => {
     }
   };
 
+  const handleOpenDetailModal = () => {
+    dispatch(openModal({ modalType: "details", task }));
+  };
+
+  const handleOpenUpdateModal = () => {
+    dispatch(openModal({ modalType: "update", task }));
+  };
+
+  const changeCompleted = () => {
+    // setIsCompleted(!isCompleted)을 호출하면 상태 업데이트가 비동기적으로 이루어지기 때문에, isCompleted의 값이 즉시 변경되지 않는다.
+    // 따라서 updateCompletedData 객체를 생성할 때 isCompleted의 이전 값이 사용된다. 이로 인해 true/false가 한 단계씩 밀리게 된다.
+  };
+
   return (
     <div className="item w-1/3 h-[25vh] p-[0.25rem]">
       <div className="w-full h-full border border-gray-500 rounded-md bg-gray-950 py-3 px-4 flex flex-col justify-between">
@@ -92,7 +106,10 @@ const Item = ({ task }) => {
           <h2 className="item-title text-xl font-normal mb-3 relative pb-2 flex justify-between">
             <span className="item-line w-full absolute bottom-0 left-0 h-[1px] bg-gray-500 "></span>
             {title}
-            <span className="text-sm py-1 px-3 border border-gray-500 rounded-md hover:bg-gray-700 cursor-pointer">
+            <span
+              className="text-sm py-1 px-3 border border-gray-500 rounded-md hover:bg-gray-700 cursor-pointer"
+              onClick={handleOpenDetailModal}
+            >
               자세히
             </span>
           </h2>
@@ -103,9 +120,9 @@ const Item = ({ task }) => {
           <div className="item-footer flex justify-between">
             <div className="item-footer-left flex gap-2">
               {iscompleted ? (
-                <button className="item-btn bg-green-400">Completed</button>
+                <button className="item-btn bg-green-400" onClick={changeCompleted}>Completed</button>
               ) : (
-                <button className="hidden item-btn bg-cyan-500">
+                <button className="item-btn bg-cyan-500" onClick={changeCompleted}>
                   Incompleted
                 </button>
               )}
@@ -116,7 +133,10 @@ const Item = ({ task }) => {
             </div>
             <div className="item-footer-right flex gap-4 items-center">
               <button>
-                <MdEditDocument className="w-5 h-5" />
+                <MdEditDocument
+                  className="w-5 h-5"
+                  onClick={handleOpenUpdateModal}
+                />
               </button>
               <button className="delete" onClick={handleDeleteItem}>
                 <MdDelete className="w-5 h-5" />

@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "../redux/slices/modalSlice";
 import { toast } from "react-toastify";
-import { fetchGetItemsData, fetchPostItemData } from "../redux/slices/apiSlice";
+import { fetchGetItemsData, fetchPostItemData, fetchUpdateItemData } from "../redux/slices/apiSlice";
 
 const Modal = () => {
   const dispatch = useDispatch();
   const { modalType, task } = useSelector((state) => state.modal);
   const user = useSelector((state) => state.auth.authData);
   // console.log(user.sub);
-  // console.log(modalType, task);
+  // console.log(modalType ,task);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -56,7 +56,10 @@ const Modal = () => {
     try {
       if (modalType === "create" && task === null) {
         await dispatch(fetchPostItemData(formData)).unwrap();
-        toast.success("할 일이 추가되었습니다.")
+        toast.success("할 일이 추가되었습니다.");
+      } else if(modalType === "update" && task) {
+        await dispatch(fetchUpdateItemData(formData)).unwrap(); 
+        toast.success("할 일이 수정되었습니다.");
       }
 
       handleCloseModal();
@@ -97,6 +100,32 @@ const Modal = () => {
     "할 일 추가하기"
   );
 
+  // console.log(task);
+
+  useEffect(() => {
+    if ((modalType === "details" && task)||(modalType === "update" && task)) {
+      setFormData({
+        title: task.title,
+        description: task.description,
+        date: task.date,
+        isCompleted: task.iscompleted,
+        isImportant: task.isimportant,
+        id: task._id,
+      });
+    } else {
+      setFormData({
+        title: "",
+        description: "",
+        date: "",
+        isCompleted: false,
+        isImportant: false,
+        userId: user?.sub,
+      });
+    }
+  }, [modalType, task, user?.sub]);
+
+  console.log(task);
+
   return (
     <div className="modal fixed bg-black bg-opacity-50 w-full h-full left-0 top-0 flex items-center justify-center z-50">
       <div className="form-wrapper bg-gray-700 rounded-md w-1/2 relative p-4">
@@ -118,6 +147,7 @@ const Modal = () => {
               value={formData.title}
               placeholder="제목을 입력해 주세요..."
               onChange={handleChange}
+              {...(modalType === "details" && { disabled: true })}
             />
           </div>
           <div className="input-control">
@@ -129,6 +159,7 @@ const Modal = () => {
               value={formData.description}
               placeholder="내용을 입력해 주세요..."
               onChange={handleChange}
+              {...(modalType === "details" && { disabled: true })}
             ></textarea>
           </div>
           <div className="input-control">
@@ -139,6 +170,7 @@ const Modal = () => {
               name="date"
               value={formData.date}
               onChange={handleChange}
+              {...(modalType === "details" && { disabled: true })}
             />
           </div>
           <div className="input-control toggler">
@@ -149,6 +181,7 @@ const Modal = () => {
               name="isCompleted"
               checked={formData.isCompleted}
               onChange={handleChange}
+              {...(modalType === "details" && { disabled: true })}
             />
           </div>
           <div className="input-control toggler">
@@ -159,11 +192,14 @@ const Modal = () => {
               name="isImportant"
               checked={formData.isImportant}
               onChange={handleChange}
+              {...(modalType === "details" && { disabled: true })}
             />
           </div>
           <div className="submit-btn flex justify-end">
             <button
-              className="flex justify-end bg-black w-fit py-3 px-6 rounded-md hover:bg-slate-900"
+              className={`flex justify-end bg-black w-fit py-3 px-6 rounded-md hover:bg-slate-900 ${
+                modalType === "details" ? "hidden" : ""
+              }`}
               type="submit"
             >
               {btnTitle}
