@@ -6,7 +6,11 @@ const index = () => {
   return (
     <div className="page-section">
       <Navbar menuIdx={3} />
-      <Itempannel pageTitle="Important Items" />
+      <Itempannel
+        pageTitle="Important Items"
+        filterCompleted="all"
+        filterImportant={true}
+      />
     </div>
   );
 };

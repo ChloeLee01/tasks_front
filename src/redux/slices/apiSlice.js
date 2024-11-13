@@ -4,16 +4,17 @@ import {
   GET_TASKS_API_URL,
   POST_TASK_API_URL,
   UPDATE_TASK_API_URL,
-  
+  UPDATE_COMPLETED_TASK_API_URL,
 } from "../../utils/apiUrl";
 import {
   deleteRequest,
   getRequest,
   postRequest,
   putRequest,
-  
+  patchRequest,
 } from "../../utils/requestMethods";
 
+// get thunk function 정의
 const getItemsFetchThunk = (actionType, apiURL) => {
   return createAsyncThunk(actionType, async (userId) => {
     // console.log(apiURL, userId);
@@ -29,6 +30,7 @@ export const fetchGetItemsData = getItemsFetchThunk(
   GET_TASKS_API_URL // 요청 url
 ); // thunk 함수 호출
 
+// delete thunk function 정의
 const deleteItemFetchThunk = (actionType, apiURL) => {
   return createAsyncThunk(actionType, async (id) => {
     // console.log(apiURL, id);
@@ -63,6 +65,7 @@ export const fetchPostItemData = postItemFetchThunk(
   POST_TASK_API_URL
 );
 
+
 // update thunk function 정의
 const updateItemFetchThunk = (actionType, apiURL) => {
   return createAsyncThunk(actionType, async (updateData) => {
@@ -78,6 +81,27 @@ const updateItemFetchThunk = (actionType, apiURL) => {
 export const fetchUpdateItemData = updateItemFetchThunk(
   "fetchUpdateItem",
   UPDATE_TASK_API_URL
+);
+
+// update completed thunk function 정의
+const updateCompletedFetchThunk = (actionType, apiURL) => {
+  return createAsyncThunk(actionType, async (completedData) => {
+    console.log(completedData);
+    const options = {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(completedData), // 표준 json 문자열로 변환
+    };
+    return await patchRequest(apiURL, options);
+  });
+};
+
+// update_completed_item
+export const fetchUpdateCompletedData = updateCompletedFetchThunk(
+  "fetchUpdateCompletedItem",
+  UPDATE_COMPLETED_TASK_API_URL
 );
 
 // handleFulfilled 함수 정의 : 요청 성공시 상태 업데이트 로직을 별도의 함수로 정의
@@ -100,6 +124,7 @@ const apiSlice = createSlice({
     deleteItemData: null,
     postItemData: null,
     updateItemData: null,
+    updateCompletedData: null,
   },
   extraReducers: (builder) => {
     builder
@@ -113,7 +138,10 @@ const apiSlice = createSlice({
       .addCase(fetchPostItemData.rejected, handleRejected)
 
       .addCase(fetchUpdateItemData.fulfilled, handleFulfilled("updateItemData"))
-      .addCase(fetchUpdateItemData.rejected, handleRejected);
+      .addCase(fetchUpdateItemData.rejected, handleRejected)
+
+      .addCase(fetchUpdateCompletedData.fulfilled, handleFulfilled("updateCompletedData"))
+      .addCase(fetchUpdateCompletedData.rejected, handleRejected);
   },
 }); // slice 객체 저장
 
