@@ -6,6 +6,7 @@ import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../redux/slices/authSlice";
+import { RiLoginBoxFill, RiLogoutBoxFill } from "react-icons/ri";
 
 // 구글 로그인 절차
 // 1. 구글 클라이언트 ID 발급
@@ -21,8 +22,38 @@ const Navbar = ({ menuIdx }) => {
   const user = useSelector((state) => state.auth.authData);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { given_name } = user || {};
+  const [authSign, setAuthSign] = useState(
+    window.innerWidth < 1024 ? (
+      <RiLoginBoxFill />
+    ) : (
+      <button className="flex justify-center items-center gap-2 bg-gray-300 text-gray-900 py-3 px-4 rounded-md w-full">
+        <FcGoogle className="w-5 h-5" />
+        <span className="text-sm">Google Login</span>
+      </button>
+    )
+  );
 
-  // console.log(user);
+  const handleAuthSign = () => {
+    if (window.innerWidth < 1204) {
+      setAuthSign(<RiLogoutBoxFill />);
+    } else {
+      setAuthSign(
+        <button className="flex justify-center items-center gap-2 bg-gray-300 text-gray-900 py-3 px-4 rounded-md w-full">
+          <FcGoogle className="w-5 h-5" />
+          <span className="text-sm">Google Login</span>
+        </button>
+      );
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleAuthSign);
+
+    // clean up
+    return () => {
+      window.removeEventListener("resize", handleAuthSign);
+    };
+  }, []);
 
   const handleLoginSuccess = useCallback(
     (response) => {
@@ -58,7 +89,7 @@ const Navbar = ({ menuIdx }) => {
     <nav className="navi bg-[#212121] w-1/5 h-full rounded-sm border border-gray-500 py-10 px-4 flex flex-col justify-between items-center">
       <div className="logo-wrapper flex w-full items-center justify-center gap-8">
         <div className="logo"></div>
-        <h2 className="font-semibold text-xl">
+        <h2 className="font-semibold text-xl hidden lg:block">
           <Link to="/">CHLOE</Link>
         </h2>
       </div>
@@ -71,8 +102,11 @@ const Navbar = ({ menuIdx }) => {
               menu.idx === menuIdx ? "bg-gray-950" : ""
             }`}
           >
-            <Link to={menu.to} className="flex gap-4 items-center py-2 px-10">
-              {menu.icon} {menu.label}
+            <Link
+              to={menu.to}
+              className="flex gap-4 items-center py-2 lg:px-10 px-2"
+            >
+              {menu.icon} <span className="hidden lg:inline">{menu.label}</span>
             </Link>
           </li>
         ))}
@@ -83,8 +117,10 @@ const Navbar = ({ menuIdx }) => {
             className="flex justify-center items-center gap-2 bg-gray-300 text-gray-900 py-3 px-4 rounded-md w-full"
             onClick={handleLogoutClick}
           >
-            <FcGoogle className="w-5 h-5" />
-            <span className="text-sm">{given_name}님 Logout</span>
+            <FcGoogle className="w-5 h-5 hidden lg:inline" />
+            <span className="text-sm">
+              <span className="hidden lg:inline">{given_name}님</span> Logout
+            </span>
           </button>
         </div>
       ) : (
@@ -94,10 +130,7 @@ const Navbar = ({ menuIdx }) => {
               onSuccess={handleLoginSuccess}
               onError={handleLoginError}
             />
-            <button className="flex justify-center items-center gap-2 bg-gray-300 text-gray-900 py-3 px-4 rounded-md w-full">
-              <FcGoogle className="w-5 h-5" />
-              <span className="text-sm">Google Login</span>
-            </button>
+            {authSign}
           </GoogleOAuthProvider>
         </div>
       )}
