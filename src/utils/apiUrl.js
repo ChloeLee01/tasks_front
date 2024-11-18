@@ -1,5 +1,5 @@
 // const rootPath = "http://localhost:8000";
-const rootPath = "http://54.167.47.184";
+const rootPath = "https://back.chloelee00.site";
 
 const GET_TASKS_API_URL = `${rootPath}/getTasks`;
 const DELETE_TASK_API_URL = `${rootPath}/deleteTask`;
