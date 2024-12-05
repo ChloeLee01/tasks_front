@@ -65,7 +65,6 @@ export const fetchPostItemData = postItemFetchThunk(
   POST_TASK_API_URL
 );
 
-
 // update thunk function 정의
 const updateItemFetchThunk = (actionType, apiURL) => {
   return createAsyncThunk(actionType, async (updateData) => {

@@ -25,7 +25,7 @@ const Modal = () => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value, // name 입력값을 받은 후 type이 checkbox 인 경우, checked, 아닌 경우 value고 설정
+      [name]: type === "checkbox" ? checked : value, // name 입력값을 받은 후 type이 checkbox 인 경우, checked, 아닌 경우 value로 설정
     }));
   };
 
